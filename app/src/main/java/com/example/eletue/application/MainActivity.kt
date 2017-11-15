@@ -1,41 +1,47 @@
 package com.example.eletue.application
 
-import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Button
-import android.widget.SeekBar
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.TextView
-import android.widget.Toast
-import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        val helloText : TextView = findViewById(R.id.hello)
+        val recyclerView : RecyclerView = findViewById(R.id.recyclerView)
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.adapter = VenueAdapter()
+    }
 
-        val percent : TextView = findViewById(R.id.textView)
+    class VenueAdapter : RecyclerView.Adapter<VenueAdapter.VenueViewHolder>() {
+        val venues = listOf(
+                Venue("Trafalor", "Test"),
+                Venue("Effeil Tower", "Test mamene"),
+                Venue("Tokyo Tower", "Wesh"))
 
-        val clickButton : Button = findViewById(R.id.button)
-        clickButton.setOnClickListener {
-            Toast.makeText(this, "You just clicked me!", Toast.LENGTH_SHORT).show()
-            val i = Intent(this.applicationContext, Main2Activity::class.java).putExtra("percent", seekBar.progress)
-            startActivity(i)
+        override fun getItemCount(): Int = venues.size
+
+        override fun onBindViewHolder(holder: VenueViewHolder, position: Int) {
+            holder.name.text = venues[position].name
+            holder.address.text = venues[position].address
         }
 
-        val seekBar : SeekBar = findViewById(R.id.seekBar)
-        seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(p0: SeekBar, p1: Int, p2: Boolean) {
-                percent.text = p1.toString()
-            }
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VenueViewHolder {
+            val context = parent.context
+            val layoutInterface = LayoutInflater.from(context)
+            val view = layoutInterface.inflate(R.layout.item_venue, parent, false)
+            return VenueViewHolder(view)
+        }
 
-            override fun onStartTrackingTouch(p0: SeekBar?) {
-            }
-
-            override fun onStopTrackingTouch(p0: SeekBar?) {
-            }
-        })
+        class VenueViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
+            val name = view.findViewById<TextView>(R.id.name)
+            val address = view.findViewById<TextView>(R.id.address)
+        }
     }
 }
