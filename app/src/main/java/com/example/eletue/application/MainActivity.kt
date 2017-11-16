@@ -1,5 +1,6 @@
 package com.example.eletue.application
 
+import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.annotation.MainThread
@@ -51,17 +52,29 @@ class MainActivity : AppCompatActivity() {
 
             if (venueResponse != null) {
                 val venues = venueResponse.response.venues
-                recyclerView.adapter = VenueAdapter(venues)
+                recyclerView.adapter = VenueAdapter(venues, { id ->
+                    val i = Intent(this, VenueDetailsActivity::class.java)
+                    i.putExtra("id", id)
+                    startActivity(i)
+                })
             }
         }
     }
 
-    class VenueAdapter(private val venues: List<Venue>) : RecyclerView.Adapter<VenueAdapter.VenueViewHolder>() {
+    class VenueAdapter(private val venues: List<Venue>, private val venueCallback: (String) -> Unit) : RecyclerView.Adapter<VenueAdapter.VenueViewHolder>() {
         override fun getItemCount(): Int = venues.size
 
         override fun onBindViewHolder(holder: VenueViewHolder, position: Int) {
-            holder.name.text = venues[position].name
-            holder.address.text = venues[position].location.address
+            val ctx = holder.itemView.context
+
+            val (id, name, location) = venues[position]
+
+            holder.name.text = name
+            holder.address.text = location.formattedAddress[0]
+
+            holder.itemView.setOnClickListener {
+                venueCallback.invoke(id)
+            }
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VenueViewHolder {
