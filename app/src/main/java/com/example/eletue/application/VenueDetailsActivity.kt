@@ -6,9 +6,11 @@ import android.os.Bundle
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.View
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import com.squareup.moshi.Moshi
+import com.squareup.picasso.Picasso
 import okhttp3.*
 import java.io.IOException
 
@@ -40,6 +42,13 @@ class VenueDetailsActivity : AppCompatActivity() {
                             val venue = venueDetailsResponse.response.venue
                             val name = venue.name
                             val location = venue.location
+
+                            if (venue.photos.count > 0) {
+                                val img = findViewById<ImageView>(R.id.image)
+                                img.visibility = View.VISIBLE
+                                val imgUrl = venue.photos.groups[0].items[0].getImgUrl(300, 500)
+                                Picasso.with(this@VenueDetailsActivity).load(imgUrl).into(img)
+                            }
 
                             val venueName = findViewById<TextView>(R.id.name)
                             val formattedAddress = findViewById<TextView>(R.id.formattedAddress)
